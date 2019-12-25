@@ -13,6 +13,11 @@
         <action
                 android:id="@+id/actionSaveNote"
                 app:destination="@id/homeFragment" />
+        <argument
+                app:argType="com.abhay.mynotes.db.Note"
+                android:name="Note"
+                android:defaultValue="@null"
+                app:nullable="true"/>
     </fragment>
     <fragment
             android:id="@+id/homeFragment"

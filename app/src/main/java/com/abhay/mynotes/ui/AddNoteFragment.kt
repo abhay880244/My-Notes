@@ -14,12 +14,15 @@ import com.abhay.mynotes.R
 import com.abhay.mynotes.db.Note
 import com.abhay.mynotes.db.NoteDatabase
 import kotlinx.android.synthetic.main.fragment_add_note.*
+import kotlinx.android.synthetic.main.note_layout.*
 import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
  */
 class AddNoteFragment : BaseFragment() {
+
+    private var note: Note? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +34,16 @@ class AddNoteFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        setHasOptionsMenu(true)
+
+
+        arguments?.let {
+            note = AddNoteFragmentArgs.fromBundle(it).note
+            edit_text_title.setText(note?.title)
+            editTextDesc.setText(note?.note)
+        }
+
 
         button_save.setOnClickListener { view ->
             val noteTitle = edit_text_title.text.toString().trim()
@@ -50,11 +63,21 @@ class AddNoteFragment : BaseFragment() {
 
 
             launch {
-                val note = Note(noteTitle, noteBody)
+
 
                 context?.let {
-                    NoteDatabase.invoke(it).getNoteDao().addNote(note)
-                    it.toast("Note Saved")
+                    val mNote = Note(noteTitle, noteBody)
+                    if (note == null) {
+
+                        NoteDatabase.invoke(it).getNoteDao().addNote(mNote)
+                        it.toast("Note Saved")
+                    } else {
+                        //copy the id of argument's note(note) in mNote and perform update operation
+                        mNote.id = note!!.id
+                        NoteDatabase.invoke(it).getNoteDao().updateNote(mNote)
+                        it.toast("Note Saved")
+                    }
+
 
                     val action = AddNoteFragmentDirections.actionSaveNote()
                     Navigation.findNavController(view).navigate(action)
