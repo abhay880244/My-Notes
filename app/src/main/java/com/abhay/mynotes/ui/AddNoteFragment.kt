@@ -1,12 +1,11 @@
 package com.abhay.mynotes.ui
 
 
+import android.app.AlertDialog
 import android.os.AsyncTask
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.Navigation
 
@@ -22,6 +21,7 @@ import kotlinx.coroutines.launch
  */
 class AddNoteFragment : BaseFragment() {
 
+    //we receive note argument in this variable (note)
     private var note: Note? = null
 
     override fun onCreateView(
@@ -38,6 +38,7 @@ class AddNoteFragment : BaseFragment() {
         setHasOptionsMenu(true)
 
 
+        //receiving note argument
         arguments?.let {
             note = AddNoteFragmentArgs.fromBundle(it).note
             edit_text_title.setText(note?.title)
@@ -75,7 +76,7 @@ class AddNoteFragment : BaseFragment() {
                         //copy the id of argument's note(note) in mNote and perform update operation
                         mNote.id = note!!.id
                         NoteDatabase.invoke(it).getNoteDao().updateNote(mNote)
-                        it.toast("Note Saved")
+                        it.toast("Note Updated")
                     }
 
 
@@ -88,6 +89,46 @@ class AddNoteFragment : BaseFragment() {
 
 
         }
+
+
+
+    }
+    private fun deleteNote() {
+
+        AlertDialog.Builder(context).apply {
+            setTitle("Are You Sure?")
+            setMessage("You can't undo this operation")
+            setPositiveButton("Yes") { _, _ ->
+
+                launch {
+                    NoteDatabase(context).getNoteDao().deleteNote(note!!)
+                    val action = AddNoteFragmentDirections.actionSaveNote()
+                    Navigation.findNavController(view!!).navigate(action)
+                }
+
+
+            }
+            setNegativeButton("No") { _, _ ->
+
+            }
+        }.create().show()
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            R.id.delete -> if (note != null) deleteNote() else context?.toast("Can't delete Note")
+        }
+        return super.onOptionsItemSelected(item)
+
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
 //    private fun saveNote(note: Note) {

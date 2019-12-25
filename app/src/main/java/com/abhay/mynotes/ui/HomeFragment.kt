@@ -33,13 +33,14 @@ class HomeFragment : BaseFragment() {
 
 
         recycler_view_notes.setHasFixedSize(true)
-        recycler_view_notes.layoutManager=StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
+        recycler_view_notes.layoutManager =
+            StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
 
 
         launch {
             context?.let {
-                val notes=NoteDatabase.invoke(it).getNoteDao().getAllNotes()
-                recycler_view_notes.adapter=NotesAdapter(notes)
+                val notes = NoteDatabase.invoke(it).getNoteDao().getAllNotes()
+                recycler_view_notes.adapter = NotesAdapter(notes)
             }
         }
 
