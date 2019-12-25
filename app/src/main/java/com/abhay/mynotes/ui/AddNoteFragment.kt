@@ -13,11 +13,12 @@ import com.abhay.mynotes.R
 import com.abhay.mynotes.db.Note
 import com.abhay.mynotes.db.NoteDatabase
 import kotlinx.android.synthetic.main.fragment_add_note.*
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
  */
-class AddNoteFragment : Fragment() {
+class AddNoteFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,29 +47,38 @@ class AddNoteFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val note = Note(noteTitle, noteBody)
 
-            saveNote(note)
+            launch {
+                val note = Note(noteTitle, noteBody)
+
+                context?.let {
+                    NoteDatabase.invoke(it).getNoteDao().addNote(note)
+                    it.toast("Note Saved")
+                }
+            }
+
+//            saveNote(note)
+
 
         }
     }
 
-    private fun saveNote(note: Note) {
-        class SaveNote : AsyncTask<Void, Void, Void>() {
-            override fun doInBackground(vararg params: Void?): Void? {
-                NoteDatabase.invoke(activity!!).getNoteDao().addNote(note)
-                return null
-            }
-
-            override fun onPostExecute(result: Void?) {
-                super.onPostExecute(result)
-                Toast.makeText(activity, "Note Saved", Toast.LENGTH_LONG).show()
-            }
-
-        }
-
-        SaveNote().execute()
-    }
+//    private fun saveNote(note: Note) {
+//        class SaveNote : AsyncTask<Void, Void, Void>() {
+//            override fun doInBackground(vararg params: Void?): Void? {
+//                NoteDatabase.invoke(activity!!).getNoteDao().addNote(note)
+//                return null
+//            }
+//
+//            override fun onPostExecute(result: Void?) {
+//                super.onPostExecute(result)
+//                Toast.makeText(activity, "Note Saved", Toast.LENGTH_LONG).show()
+//            }
+//
+//        }
+//
+//        SaveNote().execute()
+//    }
 
 
 }
